@@ -20,30 +20,29 @@ class DriveBase{
         
 
         //直線移動
-        void goTo(float X, float Y, float D, bool idle=true);
+        void goTo(float X, float Y, float D, bool idle=true, bool stop=true);
         void rotateTo(float D, bool idle=true);
         void goParallelTo(float X, float Y, bool idle=true);
 
         void runNoEncoder(float pwmX, float pwmY, float dir, float pwmD, float time);
 
         //曲線移動 これから作る
-        
+        void runAlongPoints(float X, float Y, int num);      
 
         //移動の停止
         void stopMovement();
 
         bool moving = false;
 
-        DriveBase(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor* motor_2, DriveMotor* motor_3, float kp_1, float ki_1, float kd_1, float kp_2, float ki_2, float kd_2);
+        DriveBase(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor* motor_2, DriveMotor* motor_3, float kp_1=DRIVEBASE_KP, float ki_1=DRIVEBASE_KI, float kd_1=DRIVEBASE_KD, float kp_2=DRIVEBASE_ROTATE_KP, float ki_2=DRIVEBASE_ROTATE_KI, float kd_2=DRIVEBASE_ROTATE_KD);
 
         int _s1;
 
     private:
         void go(float targetSpeedX, float targetSpeedY, float targetSpeedD);
-        void goTowardTargetAccDcc();
+        void goTowardTargetAccDcc(float movement_threshold = MOVEMENT_THRESHOLD, float movement_threshold_rad = MOVEMENT_THRESHOLD_RAD, bool stop=true);
         void resetPID();
 
-    
         Ticker movementTicker;
         Timer timer;
 

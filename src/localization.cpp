@@ -11,6 +11,7 @@ Localization::Localization(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor*
     this->driveMotors[3] = motor_3;
 
     ticker.attach([this] {encoderLocalization();}, std::chrono::milliseconds(1000)/ENCODER_LOCALIZATION_FREQUENCY);
+    flag = false;
 }
 
 
@@ -55,9 +56,29 @@ void Localization::encoderLocalization(){
 }
 
 void Localization::setPosition(float X, float Y, float D){
-    //距離センサなどの情報から位置を設定
+    //位置を強制的に設定
     posX = X;
     posY = Y;
     direction = D;
 }
 
+void Localization::addLocalization(function<void(float*, float*, float*)> f, int tag, bool activate){
+    functions[tag] = f;
+    activations[tag] = activate;
+}
+
+void Localization::activateLocalization(int tag){
+    activations[tag] = true;
+}
+
+void Localization::inactivateLocalization(int tag){
+    activations[tag] = false;
+}
+
+void Localization::loop(){
+    for(auto i = functions.begin(); i != functions.end(); ++i){
+        if(activations[i->first]){
+            (i->second)(&posX, &posY, &direction);
+        }
+    }
+}

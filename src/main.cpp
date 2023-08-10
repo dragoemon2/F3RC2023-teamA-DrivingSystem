@@ -5,6 +5,10 @@
 #include "parameters.hpp"
 
 
+
+
+
+
 //エンコーダーのピン，モーターのピン，PIDゲイン
 DriveMotor motor0(A0, A1, D2, D3, MOTOR_0_KP_1, MOTOR_0_KI_1, MOTOR_0_KD_1, MOTOR_0_KP_2, MOTOR_0_KI_2, MOTOR_0_KD_2);
 DriveMotor motor1(A2, A3, D4, D5, MOTOR_1_KP_1, MOTOR_1_KI_1, MOTOR_1_KD_1, MOTOR_1_KP_2, MOTOR_1_KI_2, MOTOR_1_KD_2);
@@ -14,7 +18,28 @@ DriveMotor motor3(D0, D1, D8, D9, MOTOR_3_KP_1, MOTOR_3_KI_1, MOTOR_3_KD_1, MOTO
 
 
 //足回り全体
-DriveBase driveBase(&motor0, &motor1, &motor2, &motor3, DRIVEBASE_KP, DRIVEBASE_KI, DRIVEBASE_KD, DRIVEBASE_ROTATE_KP, DRIVEBASE_ROTATE_KI, DRIVEBASE_ROTATE_KD);
+DriveBase driveBase(&motor0, &motor1, &motor2, &motor3);
+
+
+void r2(){
+    driveBase.goTo(2200,1250,PI);
+
+    //受け取り
+
+    driveBase.goTo(2864,1920,PI/2);
+    driveBase.goTo(2864,2210,PI/2);
+
+    //設置
+
+    driveBase.goTo(2200,1250,PI);
+
+    //受け取り
+
+    driveBase.goTo(4050,213,0);
+    driveBase.goTo(4280,213,0);
+}
+
+
 
 int main(){
     

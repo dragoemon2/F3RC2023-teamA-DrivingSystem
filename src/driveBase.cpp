@@ -86,9 +86,10 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
 
 }
 
+
 //現在決められている目標に向かって進む
 //PID制御で目標値に向かうが，速度・加速度に制限を設けることで台形制御を実現する
-void DriveBase::goTowardTargetAccDcc(){
+void DriveBase::goTowardTargetAccDcc(float movement_threshold, float movement_threshold_rad, bool stop){
     float differenceX = target_X-localization.posX;
     float differenceY = target_Y-localization.posY;
     float differenceR = sqrtf(differenceX*differenceX + differenceY*differenceY);
@@ -115,10 +116,14 @@ void DriveBase::goTowardTargetAccDcc(){
 
     go(targetSpeedX, targetSpeedY, targetSpeedD);
 
-    if (differenceR < MOVEMENT_THRESHOLD && abs(radiansMod(target_D - localization.direction)) < MOVEMENT_THRESHOLD_RAD){
-        stopMovement();
+    if (differenceR < movement_threshold && abs(radiansMod(target_D - localization.direction)) < movement_threshold_rad){
+        movementTicker.detach();
+        if(stop){
+            stopMovement();
+        }
     }
 }
+
 
 //モーターの停止
 void DriveBase::stopMovement(){
@@ -131,24 +136,36 @@ void DriveBase::stopMovement(){
 
 
 //目標位置に向かって直線移動する
-void DriveBase::goTo(float X, float Y, float D, bool idle){
-    if(moving){
-        printf("warning: a motion requested while the robot is moving.");
-        movementTicker.detach();
+void DriveBase::goTo(float X, float Y, float D, bool idle, bool stop){
+    if(!moving){
+        resetPID();
+        moving = true;
     }
-    moving = true;
 
-    //目標位置の設定
-    target_X = X;
-    target_Y = Y;
-    target_D = D;
+    if(stop){
+        //目標位置の設定
+        target_X = X;
+        target_Y = Y;
+        target_D = D;
 
-    //PID制御器の初期化
-    resetPID();
+        //割り込みの設定
+        movementTicker.attach([this] {goTowardTargetAccDcc();}, std::chrono::milliseconds(1000)/SPEED_ADJUSTMENT_FREQUENCY);
+    }else{
+        float distance = (X - localization.posX)*(X - localization.posX) + (Y - localization.posY)*(Y - localization.posY);
+        if(distance == 0.0f){
+            target_X = X;
+            target_Y = Y;
+            target_D = D;
+        }else{
+            target_X = X + MOVEMENT_SWITCH_THRESHOLD * (X - localization.posX)/distance;
+            target_Y = Y + MOVEMENT_SWITCH_THRESHOLD * (Y - localization.posY)/distance;
+            target_D = D;
+        }
 
-    //割り込みの設定
-    movementTicker.attach([this] {goTowardTargetAccDcc();}, std::chrono::milliseconds(1000)/SPEED_ADJUSTMENT_FREQUENCY);
-
+        //割り込みの設定
+        movementTicker.attach([this] {goTowardTargetAccDcc(MOVEMENT_SWITCH_THRESHOLD, 2*PI, false);}, std::chrono::milliseconds(1000)/SPEED_ADJUSTMENT_FREQUENCY);
+    }
+    
     //idle=trueなら移動が終わるまで待機
     if(idle){
         while(moving) {

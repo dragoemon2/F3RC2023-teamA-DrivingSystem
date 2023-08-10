@@ -2,6 +2,10 @@
 
 #include "encoder.hpp"
 #include "driveMotor.hpp"
+#include <map>
+#include <functional>
+
+using namespace std;
 
 //自己位置推
 
@@ -20,12 +24,23 @@ class Localization{
         float speedY = 0.0f;
 
         void setPosition(float X, float Y, float D); //外部から位置を強制的に設定する．
-        void encoderLocalization(); //エンコーダーによる自己位置推定
+        void loop();
+        void addLocalization(function<void(float*, float*, float*)> f, int tag, bool activate=true);
+        void activateLocalization(int tag);
+        void inactivateLocalization(int tag);
+
 
         Localization(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor* motor_2, DriveMotor* motor_3);
 
     private:
+        void encoderLocalization(); //エンコーダーによる自己位置推定
         int incrementedNumBefore[4] = {0,0,0,0};
+
+        bool flag=false;
+
+        map<int, function<void(float*, float*, float*)>> functions;
+        map<int, bool> activations;
 
         Ticker ticker;
 };
+

@@ -10,7 +10,7 @@
 
 //固定値
 #define ENC_RES_MAX (500) //ロータリエンコーダーの分解能
-#define TRED_RADIUS (150.0f) //中心からオムニホイールの距離[mm]
+#define TRED_RADIUS (125.4f) //中心からオムニホイールの距離[mm]
 #define WHEEL_DIAMETER (88.0f)	//オムニホイールの直径	[mm]
 #define WHEEL_RADIUS	(WHEEL_DIAMETER/2.0f) //オムニホイールの半径	[mm]
 #define MMPP 		(WHEEL_DIAMETER*PI)/(ENC_RES_MAX)	//エンコーダ1パルスあたりに進む距離[mm]
@@ -71,6 +71,8 @@
 //目的地到着を判定する閾値
 #define MOVEMENT_THRESHOLD (10) //目的地に到着したとみなす半径[mm]
 #define MOVEMENT_THRESHOLD_RAD (0.02f) //目的地に到着したとみなす角度の誤差[rad]
+
+#define MOVEMENT_SWITCH_THRESHOLD (MAX_SPEED/DRIVEBASE_KP)
 
 #define MAX_DELTA_R (MAX_SPEED)/(SPEED_ADJUSTMENT_FREQUENCY) 
 #define MAX_DELTA_D (MAX_ROTATE_SPEED)/(SPEED_ADJUSTMENT_FREQUENCY)
