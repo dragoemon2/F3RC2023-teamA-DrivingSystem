@@ -6,9 +6,6 @@
 
 
 
-
-
-
 //エンコーダーのピン，モーターのピン，PIDゲイン
 DriveMotor motor0(A0, A1, D2, D3, MOTOR_0_KP_1, MOTOR_0_KI_1, MOTOR_0_KD_1, MOTOR_0_KP_2, MOTOR_0_KI_2, MOTOR_0_KD_2);
 DriveMotor motor1(A2, A3, D4, D5, MOTOR_1_KP_1, MOTOR_1_KI_1, MOTOR_1_KD_1, MOTOR_1_KP_2, MOTOR_1_KI_2, MOTOR_1_KD_2);

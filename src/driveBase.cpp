@@ -216,3 +216,40 @@ void DriveBase::rotateTo(float D, bool idle){
 void DriveBase::goParallelTo(float X, float Y, bool idle){
     goTo(X, Y, localization.direction, idle);
 }
+
+
+void DriveBase::runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, unsigned int num){
+    for(int i=0;i<num+1;i++){
+        float X = centerX + radius*sin((start_dir*(num-i) + end_dir*i)/num);
+        float Y = centerY - radius*cos((start_dir*(num-i) + end_dir*i)/num);
+
+        goTo(X, Y, D, true, i == num && stop);
+    }
+}
+
+
+void DriveBase::goCurveTo(float start_dir, float end_dir, float X, float Y, float D, bool stop=true, unsigned int num){
+    if(radiansMod(start_dir - end_dir) == 0){
+        goTo(X, Y, D, true, stop);
+        return;
+    }
+    
+    float deltaX = X - localization.posX;
+    float deltaY = Y - localization.posY;
+
+    //カーブの半径
+    float radius1 = (+ sin(end_dir) * deltaX - cos(end_dir) * deltaY)/(1-cos(end_dir - start_dir));
+    float radius2 = (- sin(start_dir)*deltaX + cos(start_dir)*deltaY)/(1-cos(end_dir - start_dir));
+
+    if(abs(radius1) < abs(radius2)){
+        float centerX = localization.posX - radius1*sin(start_dir);
+        float centerY = localization.posY + radius1*cos(start_dir);
+        runAlongArch(radius1, centerX, centerY, start_dir, end_dir, D, false, num);
+        goTo(X, Y, D, true, stop);
+    }else{
+        float centerX = X - radius2*sin(end_dir);
+        float centerY = Y + radius2*cos(end_dir);
+        runAlongArch(radius2, centerX, centerY, start_dir, end_dir, D, stop, num);
+    }
+
+}

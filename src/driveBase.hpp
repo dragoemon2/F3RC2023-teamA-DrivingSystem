@@ -24,10 +24,11 @@ class DriveBase{
         void rotateTo(float D, bool idle=true);
         void goParallelTo(float X, float Y, bool idle=true);
 
-        void runNoEncoder(float pwmX, float pwmY, float dir, float pwmD, float time);
+        //曲線移動
+        void goCurveTo(float start_dir, float end_dir, float X, float Y, float D, bool stop=true, unsigned int num=8);  
 
-        //曲線移動 これから作る
-        void runAlongPoints(float X, float Y, int num);      
+        //デバッグ用
+        void runNoEncoder(float pwmX, float pwmY, float dir, float pwmD, float time);
 
         //移動の停止
         void stopMovement();
@@ -41,6 +42,7 @@ class DriveBase{
     private:
         void go(float targetSpeedX, float targetSpeedY, float targetSpeedD);
         void goTowardTargetAccDcc(float movement_threshold = MOVEMENT_THRESHOLD, float movement_threshold_rad = MOVEMENT_THRESHOLD_RAD, bool stop=true);
+        void runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, unsigned int num);
         void resetPID();
 
         Ticker movementTicker;
