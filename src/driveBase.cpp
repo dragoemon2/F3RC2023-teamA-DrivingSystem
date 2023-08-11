@@ -219,9 +219,10 @@ void DriveBase::goParallelTo(float X, float Y, bool idle){
 
 
 void DriveBase::runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, unsigned int num){
+    radius = abs(radius);
     for(int i=0;i<num+1;i++){
-        float X = centerX + radius*sin((start_dir*(num-i) + end_dir*i)/num);
-        float Y = centerY - radius*cos((start_dir*(num-i) + end_dir*i)/num);
+        float X = centerX + radius*sin(start_dir + radiansMod(end_dir-start_dir) * (i/num));
+        float Y = centerY - radius*cos(start_dir + radiansMod(end_dir-start_dir) * (i/num));
 
         goTo(X, Y, D, true, i == num && stop);
     }
@@ -233,7 +234,7 @@ void DriveBase::goCurveTo(float start_dir, float end_dir, float X, float Y, floa
         goTo(X, Y, D, true, stop);
         return;
     }
-    
+
     float deltaX = X - localization.posX;
     float deltaY = Y - localization.posY;
 
