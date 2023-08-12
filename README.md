@@ -161,8 +161,7 @@ F3RCの足回り周辺のプログラムです
   
 ##  原理の説明
   
-  
-ここからは原理の説明です．markdownだからlatexかけるよなと思ったんですが，pushしたら数式見れなかったので，ダウンロードしてvscodeで開いて見てください(ごめん)
+下の図はプログラム全体のフローチャートです．これをみながら読んでください
   
 ![DriveSystem](https://user-images.githubusercontent.com/139035878/258173851-2150bdb4-e32b-4fe9-99ad-47ba0cc4f7de.png )
   
