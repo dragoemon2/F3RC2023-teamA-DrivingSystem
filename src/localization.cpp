@@ -43,7 +43,7 @@ void Localization::encoderLocalization(){
 
     float dY = MMPP * (sin(direction)*dx+cos(direction)*dy);
     posY += dY;
-    speedX = dY*ENCODER_LOCALIZATION_FREQUENCY;
+    speedY = dY*ENCODER_LOCALIZATION_FREQUENCY;
 
     float dD = RADPP * dd;
 

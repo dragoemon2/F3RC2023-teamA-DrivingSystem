@@ -14,6 +14,8 @@ DriveMotor motor1(A2, A3, D4, D5, MOTOR_1_KP_1, MOTOR_1_KI_1, MOTOR_1_KD_1, MOTO
 DriveMotor motor2(A4, A5, D6, D7, MOTOR_2_KP_1, MOTOR_2_KI_1, MOTOR_2_KD_1, MOTOR_2_KP_2, MOTOR_2_KI_2, MOTOR_2_KD_2);
 DriveMotor motor3(D0, D1, D8, D9, MOTOR_3_KP_1, MOTOR_3_KI_1, MOTOR_3_KD_1, MOTOR_3_KP_2, MOTOR_3_KI_2, MOTOR_3_KD_2);
 
+
+//シミュレーション
 MotorSimulation simulation0(&motor0, 5000);
 MotorSimulation simulation1(&motor1, 5000);
 MotorSimulation simulation2(&motor2, 5000);
@@ -23,15 +25,43 @@ MotorSimulation simulation3(&motor3, 5000);
 DriveBase driveBase(&motor0, &motor1, &motor2, &motor3);
 
 
+void r2main(){
+    //位置設定
+
+    driveBase.goTo(2200,1250,PI);
+    
+    //受け取り
+
+    driveBase.goTo(2864,1920,PI/2);
+    driveBase.goTo(2864,2210,PI/2);
+
+    //設置
+
+    driveBase.goTo(2200,1250,PI);
+
+    //受け取り
+
+    driveBase.goTo(4050,213,0);
+    driveBase.goTo(4280,213,0);
+}
+
 
 int main(){
     //motor0.attachLoop([] {printf("%d %d\n", int(motor0.pwm*100), int(motor0.encoder.getAmount()));});
 
-    driveBase.attachLoop([] {printf("X:%d Y:%d D:%d\n", int(driveBase.localization.posX), int(driveBase.localization.posY), int(driveBase.localization.direction*180/PI));});
+    driveBase.attachLoop([] {printf("X:%d Y:%d D:%d V:%d\n", int(driveBase.localization.posX), int(driveBase.localization.posY), int(driveBase.localization.direction*180/PI), int(sqrtf(driveBase.localization.speedX*driveBase.localization.speedX + driveBase.localization.speedY*driveBase.localization.speedY)));});
+    //driveBase.attachLoop([] {printf("vX:%d vY:%d\n", int(driveBase._s1), int(driveBase._s2));});
 
     //motor0.rotateTo(1000);
+    
+    //driveBase.goTo(10000, 10000, 0, true, false);
 
-    //driveBase.goTo(2200,1250,PI);
+    //driveBase.stopMovement();
+
+    driveBase.goCurveTo(PI/2, 0, 10000, 100000, 0, true, 30);
+
+    /*
+    driveBase.goTo(2200,1250,PI);
 
     
     //受け取り
@@ -47,6 +77,8 @@ int main(){
 
     driveBase.goTo(4050,213,0);
     driveBase.goTo(4280,213,0);
+    
+    */
     
     
 }

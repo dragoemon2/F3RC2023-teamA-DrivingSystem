@@ -33,6 +33,8 @@ void DriveBase::resetPID(){
 void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
     float targetSpeedR = sqrtf(targetSpeedX*targetSpeedX + targetSpeedY*targetSpeedY);
 
+    _s1 = int(targetSpeedX);
+    _s2 = int(targetSpeedY);
 
     //速度を制限する
     if(targetSpeedR > MAX_SPEED){
@@ -67,6 +69,8 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
     }else if(targetAccD < -MAX_ROTATE_ACCELERATION){
         targetSpeedD = localization.rotateSpeed - MAX_ROTATE_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
     }
+
+    
 
     //X, Yに回転行列をかける
     float vx = cos(localization.direction)*targetSpeedX + sin(localization.direction)*targetSpeedY;
@@ -111,27 +115,26 @@ void DriveBase::goTowardTargetAccDcc(float movement_threshold, float movement_th
 
     float targetSpeedD = pidRotateController.calculate(differenceD);
 
-    _s1 = int(targetSpeedD*TRED_RADIUS*180/PI);
+
 
     //targetSpeedD = 0;
 
     go(targetSpeedX, targetSpeedY, targetSpeedD);
 
     if (differenceR < movement_threshold && abs(radiansMod(target_D - localization.direction)) < movement_threshold_rad){
-        movementTicker.detach();
-        if(stop){
-            stopMovement();
-        }
+        stopMovement(stop);
     }
 }
 
 
 //モーターの停止
-void DriveBase::stopMovement(){
+void DriveBase::stopMovement(bool stop){
     movementTicker.detach();
     moving = false;
-    for(int i=0;i<4;i++){
-        motors[i]->stop();
+    if(stop){
+        for(int i=0;i<4;i++){
+            motors[i]->stop();
+        }
     }
 }
 
@@ -152,7 +155,7 @@ void DriveBase::goTo(float X, float Y, float D, bool idle, bool stop){
         //割り込みの設定
         movementTicker.attach([this] {goTowardTargetAccDcc();}, std::chrono::milliseconds(1000)/SPEED_ADJUSTMENT_FREQUENCY);
     }else{
-        float distance = (X - localization.posX)*(X - localization.posX) + (Y - localization.posY)*(Y - localization.posY);
+        float distance = sqrtf((X - localization.posX)*(X - localization.posX) + (Y - localization.posY)*(Y - localization.posY));
         if(distance == 0.0f){
             target_X = X;
             target_Y = Y;
@@ -222,12 +225,13 @@ void DriveBase::goParallelTo(float X, float Y, bool idle){
 
 
 void DriveBase::runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, int num){
-    radius = abs(radius);
     for(int i=0;i<num+1;i++){
-        float X = centerX + radius*sin(start_dir + radiansMod(end_dir-start_dir) * (i/num));
-        float Y = centerY - radius*cos(start_dir + radiansMod(end_dir-start_dir) * (i/num));
-
-        goTo(X, Y, D, true, i == num && stop);
+        float X = centerX + radius*sin(start_dir + radiansMod(end_dir-start_dir) * (float(i)/num));
+        float Y = centerY - radius*cos(start_dir + radiansMod(end_dir-start_dir) * (float(i)/num));
+        
+        if(i != 0 || X != localization.posX || Y != localization.posY){
+            goTo(X, Y, D, true, i == num && stop);
+        }
     }
 }
 
@@ -255,7 +259,6 @@ void DriveBase::goCurveTo(float start_dir, float end_dir, float X, float Y, floa
         float centerY = Y + radius2*cos(end_dir);
         runAlongArch(radius2, centerX, centerY, start_dir, end_dir, D, stop, num);
     }
-
 }
 
 void DriveBase::attachLoop(function<void(void)> loop_func){

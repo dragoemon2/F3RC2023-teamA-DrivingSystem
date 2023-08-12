@@ -34,7 +34,7 @@ class DriveBase{
         void runNoEncoder(float pwmX, float pwmY, float dir, float pwmD, float time);
 
         //移動の停止
-        void stopMovement();
+        void stopMovement(bool stop=true);
 
         void attachLoop(function<void(void)> loop_func);
 
@@ -43,6 +43,7 @@ class DriveBase{
         DriveBase(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor* motor_2, DriveMotor* motor_3, float kp_1=DRIVEBASE_KP, float ki_1=DRIVEBASE_KI, float kd_1=DRIVEBASE_KD, float kp_2=DRIVEBASE_ROTATE_KP, float ki_2=DRIVEBASE_ROTATE_KI, float kd_2=DRIVEBASE_ROTATE_KD);
 
         int _s1;
+        int _s2;
 
     private:
         void go(float targetSpeedX, float targetSpeedY, float targetSpeedD);
