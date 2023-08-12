@@ -20,5 +20,4 @@ class MotorSimulation{
         float value = 0;
 
         Ticker ticker;
-
 };
