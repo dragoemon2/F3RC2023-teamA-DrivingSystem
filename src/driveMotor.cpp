@@ -10,6 +10,7 @@
 //初期化
 DriveMotor::DriveMotor(PinName encoder_pin_a, PinName encoder_pin_b, PinName pwm_pin, PinName dir_pin, float kp_1, float ki_1, float kd_1, float kp_2, float ki_2, float kd_2): encoder(encoder_pin_a, encoder_pin_b), pwmOut(pwm_pin), dirOut(dir_pin), pidController(SPEED_ADJUSTMENT_FREQUENCY,kp_1,ki_1,kd_1), pidSpeedController(SPEED_ADJUSTMENT_FREQUENCY,kp_2,ki_2,kd_2) {
     pidController.reset();
+    loop = [this] {return;};
 }
 
 //PWMの書き込み
@@ -105,6 +106,7 @@ void DriveMotor::rotateTo(float target_point, bool idle){
     //idle=trueなら移動が終わるまで待機
     if(idle){
         while(moving) {
+            loop();
             wait_ns(1);
         }
     }
@@ -128,7 +130,14 @@ void DriveMotor::rotatePermanent(float speed, bool idle){
 
     //idle=trueなら移動が終わるまで待機
     if(idle){
-        while(moving) {}
+        while(moving) {
+            loop();
+            wait_ns(1);
+        }
     }
+}
+
+void DriveMotor::attachLoop(function<void(void)> loop_func){
+    loop = loop_func;
 }
 

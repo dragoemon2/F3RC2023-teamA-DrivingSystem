@@ -3,6 +3,9 @@
 #include <mbed.h>
 #include "encoder.hpp"
 #include "PIDcontroller.hpp"
+#include <functional>
+
+using namespace std;
 
 class DriveMotor{
     public:
@@ -21,6 +24,10 @@ class DriveMotor{
         void rotatePermanent(float speed, bool idle=true);
 
         void stop();
+
+        void attachLoop(function<void(void)> loop_func);
+
+
         DriveMotor(PinName encoder_pin_a, PinName encoder_pin_b, PinName pwm_pin, PinName dir_pin, float kp_1, float ki_1, float kd_1, float kp_2, float ki_2, float kd_2);
 
         float target = 0.0f;
@@ -36,8 +43,7 @@ class DriveMotor{
         float _s2 = 0;
 
     private:
-    void rotateTowardTargetAccDcc(); //target[mm] に向かって動く
+        void rotateTowardTargetAccDcc(); //target[mm] に向かって動く
         Ticker movementTicker;
-        
+        function<void(void)> loop;
 };
-

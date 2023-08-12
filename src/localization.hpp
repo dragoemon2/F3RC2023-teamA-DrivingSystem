@@ -29,12 +29,16 @@ class Localization{
         void activateLocalization(int tag);
         void inactivateLocalization(int tag);
 
+        int incrementedNumBefore[4] = {0,0,0,0};
+
+        int _s1;
+
 
         Localization(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor* motor_2, DriveMotor* motor_3);
 
     private:
         void encoderLocalization(); //エンコーダーによる自己位置推定
-        int incrementedNumBefore[4] = {0,0,0,0};
+        
 
         bool flag=false;
 

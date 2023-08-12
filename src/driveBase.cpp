@@ -18,6 +18,7 @@ DriveBase::DriveBase(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor* motor
     motors[3] = motor_3;
 
     moving = false;
+    loop = [this] {return;};
 }
 
 void DriveBase::resetPID(){
@@ -31,8 +32,6 @@ void DriveBase::resetPID(){
 //速度を指定して移動
 void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
     float targetSpeedR = sqrtf(targetSpeedX*targetSpeedX + targetSpeedY*targetSpeedY);
-
-    //_s1 = int(targetSpeedR);
 
 
     //速度を制限する
@@ -80,6 +79,7 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
     speeds[2] = SQRT2/2 * (+ vx - vy) + TRED_RADIUS * targetSpeedD;
     speeds[3] = SQRT2/2 * (+ vx + vy) + TRED_RADIUS * targetSpeedD;
     
+    
     for (int i=0;i<4;i++){
         motors[i]->rotate(speeds[i]);
     }
@@ -97,7 +97,6 @@ void DriveBase::goTowardTargetAccDcc(float movement_threshold, float movement_th
 
     float targetSpeedR = pidController.calculate(differenceR);
 
-    _s1 = targetSpeedR;
 
     float targetSpeedX, targetSpeedY;
 
@@ -111,6 +110,8 @@ void DriveBase::goTowardTargetAccDcc(float movement_threshold, float movement_th
     }
 
     float targetSpeedD = pidRotateController.calculate(differenceD);
+
+    _s1 = int(targetSpeedD*TRED_RADIUS*180/PI);
 
     //targetSpeedD = 0;
 
@@ -169,6 +170,7 @@ void DriveBase::goTo(float X, float Y, float D, bool idle, bool stop){
     //idle=trueなら移動が終わるまで待機
     if(idle){
         while(moving) {
+            loop();
             wait_ns(1);
         }
     }
@@ -201,6 +203,7 @@ void DriveBase::runNoEncoder(float pwmX, float pwmY, float dir, float pwmD, floa
     
 
     while(chrono::duration<float>(timer.elapsed_time()).count() < time){
+        loop();
         wait_ns(1);
     }
 
@@ -218,7 +221,7 @@ void DriveBase::goParallelTo(float X, float Y, bool idle){
 }
 
 
-void DriveBase::runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, unsigned int num){
+void DriveBase::runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, int num){
     radius = abs(radius);
     for(int i=0;i<num+1;i++){
         float X = centerX + radius*sin(start_dir + radiansMod(end_dir-start_dir) * (i/num));
@@ -229,7 +232,7 @@ void DriveBase::runAlongArch(float radius, float centerX, float centerY, float s
 }
 
 
-void DriveBase::goCurveTo(float start_dir, float end_dir, float X, float Y, float D, bool stop=true, unsigned int num){
+void DriveBase::goCurveTo(float start_dir, float end_dir, float X, float Y, float D, bool stop, int num){
     if(radiansMod(start_dir - end_dir) == 0){
         goTo(X, Y, D, true, stop);
         return;
@@ -253,4 +256,8 @@ void DriveBase::goCurveTo(float start_dir, float end_dir, float X, float Y, floa
         runAlongArch(radius2, centerX, centerY, start_dir, end_dir, D, stop, num);
     }
 
+}
+
+void DriveBase::attachLoop(function<void(void)> loop_func){
+    loop = loop_func;
 }

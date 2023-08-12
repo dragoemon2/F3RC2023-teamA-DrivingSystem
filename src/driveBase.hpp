@@ -6,6 +6,9 @@
 #include "parameters.hpp"
 #include "localization.hpp"
 #include "PIDcontroller.hpp"
+#include <functional>
+
+using namespace std;
 
 
 float radiansMod(float x, float y=2*PI);
@@ -25,13 +28,15 @@ class DriveBase{
         void goParallelTo(float X, float Y, bool idle=true);
 
         //曲線移動
-        void goCurveTo(float start_dir, float end_dir, float X, float Y, float D, bool stop=true, unsigned int num=8);  
+        void goCurveTo(float start_dir, float end_dir, float X, float Y, float D, bool stop=true, int num=8);  
 
         //デバッグ用
         void runNoEncoder(float pwmX, float pwmY, float dir, float pwmD, float time);
 
         //移動の停止
         void stopMovement();
+
+        void attachLoop(function<void(void)> loop_func);
 
         bool moving = false;
 
@@ -42,11 +47,16 @@ class DriveBase{
     private:
         void go(float targetSpeedX, float targetSpeedY, float targetSpeedD);
         void goTowardTargetAccDcc(float movement_threshold = MOVEMENT_THRESHOLD, float movement_threshold_rad = MOVEMENT_THRESHOLD_RAD, bool stop=true);
-        void runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, unsigned int num);
+        void runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, int num);
         void resetPID();
 
         Ticker movementTicker;
         Timer timer;
+
+        function<void(void)> loop;
+
+
+
 
         //目標位置
         float target_X = 0.0f;

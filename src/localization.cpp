@@ -24,17 +24,17 @@ void Localization::encoderLocalization(){
     }
 
     //回転成分
-    float dd = (incrementDelta[0] + incrementDelta[1] + incrementDelta[2] + incrementDelta[3])/4;
+    float dd = (incrementDelta[0] + incrementDelta[1] + incrementDelta[2] + incrementDelta[3])/4.0f;
 
     //回転成分を取り除く
-    float a = SQRT2*(driveMotors[0]->encoder.IncrementedNum-dd); //-dx+dy
-    float b = SQRT2*(driveMotors[1]->encoder.IncrementedNum-dd); //-dx-dy
-    float c = SQRT2*(driveMotors[2]->encoder.IncrementedNum-dd); //+dx-dy
-    float d = SQRT2*(driveMotors[3]->encoder.IncrementedNum-dd); //+dx+dy
+    float a = SQRT2*(incrementDelta[0]-dd); //-dx+dy
+    float b = SQRT2*(incrementDelta[1]-dd); //-dx-dy
+    float c = SQRT2*(incrementDelta[2]-dd); //+dx-dy
+    float d = SQRT2*(incrementDelta[3]-dd); //+dx+dy
 
     //位置の変化．ただしロボットに対して相対的な向き
-    float dx = (-a-b+c+d)/4; // x成分の変化量/MMPP
-    float dy = (+a-b-c+d)/4; // y成分の変化量/MMPP
+    float dx = (-a-b+c+d)/4.0f; // x成分の変化量/MMPP
+    float dy = (+a-b-c+d)/4.0f; // y成分の変化量/MMPP
 
     //推定値の書き込み
     float dX = MMPP * (cos(direction)*dx-sin(direction)*dy);
@@ -46,6 +46,7 @@ void Localization::encoderLocalization(){
     speedX = dY*ENCODER_LOCALIZATION_FREQUENCY;
 
     float dD = RADPP * dd;
+
     direction += dD;
     rotateSpeed = dD*ENCODER_LOCALIZATION_FREQUENCY;
 

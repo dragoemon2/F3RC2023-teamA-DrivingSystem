@@ -13,7 +13,7 @@
 #define TRED_RADIUS (125.4f) //中心からオムニホイールの距離[mm]
 #define WHEEL_DIAMETER (88.0f)	//オムニホイールの直径	[mm]
 #define WHEEL_RADIUS	(WHEEL_DIAMETER/2.0f) //オムニホイールの半径	[mm]
-#define MMPP 		(WHEEL_DIAMETER*PI)/(ENC_RES_MAX)	//エンコーダ1パルスあたりに進む距離[mm]
+#define MMPP 		((WHEEL_DIAMETER*PI)/(ENC_RES_MAX))	//エンコーダ1パルスあたりに進む距離[mm]
 #define RADPP 	(MMPP/TRED_RADIUS)	//エンコーダ1パルスあたりの回転角[rad]
 
 //モーターのPIDゲイン
@@ -54,15 +54,15 @@
 #define DRIVEBASE_KI (0.06f)
 #define DRIVEBASE_KD (0.0f)
 
-#define DRIVEBASE_ROTATE_KP (DRIVEBASE_KP)
-#define DRIVEBASE_ROTATE_KI (DRIVEBASE_KI)
+#define DRIVEBASE_ROTATE_KP (DRIVEBASE_KP*1.5)
+#define DRIVEBASE_ROTATE_KI (DRIVEBASE_KI*1.5)
 #define DRIVEBASE_ROTATE_KD (DRIVEBASE_KD)
 
 //移動パラメータ
 #define MAX_ACCELERATION (20000) //最大加速度 [mm/s^2]
 #define MAX_SPEED (4000) //最高速度  [mm/s]
-#define MAX_ROTATE_ACCELERATION (2000) //最大回転速度  [mm/s^2]
-#define MAX_ROTATE_SPEED (800) //最大回転加速度  [mm/s^2]
+#define MAX_ROTATE_ACCELERATION (MAX_ACCELERATION/TRED_RADIUS) //最大回転速度  [rad/s^2]
+#define MAX_ROTATE_SPEED (MAX_SPEED/TRED_RADIUS) //最大回転加速度  [rad/s]
 
 //制御周期など
 #define ENCODER_LOCALIZATION_FREQUENCY (200) //エンコーダーによる自己位置推定の頻度[Hz]
@@ -70,10 +70,10 @@
 
 //目的地到着を判定する閾値
 #define MOVEMENT_THRESHOLD (10) //目的地に到着したとみなす半径[mm]
-#define MOVEMENT_THRESHOLD_RAD (0.02f) //目的地に到着したとみなす角度の誤差[rad]
+#define MOVEMENT_THRESHOLD_RAD (0.03f) //目的地に到着したとみなす角度の誤差[rad]
 
 #define MOVEMENT_SWITCH_THRESHOLD (MAX_SPEED/DRIVEBASE_KP)
 
-#define MAX_DELTA_R (MAX_SPEED)/(SPEED_ADJUSTMENT_FREQUENCY) 
-#define MAX_DELTA_D (MAX_ROTATE_SPEED)/(SPEED_ADJUSTMENT_FREQUENCY)
+#define MAX_DELTA_R ((MAX_SPEED)/(SPEED_ADJUSTMENT_FREQUENCY))
+#define MAX_DELTA_D ((MAX_ROTATE_SPEED)/(SPEED_ADJUSTMENT_FREQUENCY))
 
