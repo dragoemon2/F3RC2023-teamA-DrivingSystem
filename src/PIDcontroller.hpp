@@ -14,11 +14,9 @@ public:
     float KI; // I制御のゲイン
     float KD; // D制御のゲイン
 
-
-    
-
-
     PIDController(int frequency, float kp, float ki, float kd);
     float calculate(float error);
     void reset();
+
+    void setGain(float kp, float ki, float kd);
 };

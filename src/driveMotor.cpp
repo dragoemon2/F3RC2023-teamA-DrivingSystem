@@ -9,7 +9,9 @@
 
 //初期化
 DriveMotor::DriveMotor(PinName encoder_pin_a, PinName encoder_pin_b, PinName pwm_pin, PinName dir_pin, float kp_1, float ki_1, float kd_1, float kp_2, float ki_2, float kd_2): encoder(encoder_pin_a, encoder_pin_b), pwmOut(pwm_pin), dirOut(dir_pin), pidController(SPEED_ADJUSTMENT_FREQUENCY,kp_1,ki_1,kd_1), pidSpeedController(SPEED_ADJUSTMENT_FREQUENCY,kp_2,ki_2,kd_2) {
+    pwmOut.period(0.00006);
     pidController.reset();
+    
     loop = [this] {return;};
 }
 
@@ -66,6 +68,8 @@ void DriveMotor::rotate(float targetSpeed){
 
 //停止
 void DriveMotor::stop(){
+    movementTicker.detach();
+    moving=false;
     setPWM(0);
 }
 
@@ -89,7 +93,7 @@ void DriveMotor::rotateTowardTargetAccDcc(){
 //目標まで移動
 void DriveMotor::rotateTo(float target_point, bool idle){
     if(moving){
-        printf("warning: a motion requested while the motor is moving.");
+        //printf("warning: a motion requested while the motor is moving.");
         movementTicker.detach();
     }
     moving = true;
@@ -115,7 +119,7 @@ void DriveMotor::rotateTo(float target_point, bool idle){
 
 void DriveMotor::rotatePermanent(float speed, bool idle){
     if(moving){
-        printf("warning: a motion requested while the motor is moving.");
+        //printf("warning: a motion requested while the motor is moving.");
         movementTicker.detach();
     }
     moving = true;

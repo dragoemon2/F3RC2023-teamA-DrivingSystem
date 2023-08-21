@@ -18,3 +18,9 @@ float PIDController::calculate(float error) {
 void PIDController::reset(){
     integral = 0.0;
 }
+
+void PIDController::setGain(float kp, float ki, float kd){
+    KP = kp;
+    KI = ki/FREQUENCY;
+    KD = kd*FREQUENCY;
+}

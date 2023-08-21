@@ -10,9 +10,6 @@
 
 using namespace std;
 
-
-float radiansMod(float x, float y=2*PI);
-
 class DriveBase{
     public:
         DriveMotor* motors[4];
@@ -55,9 +52,6 @@ class DriveBase{
         Timer timer;
 
         function<void(void)> loop;
-
-
-
 
         //目標位置
         float target_X = 0.0f;

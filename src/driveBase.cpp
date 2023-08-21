@@ -3,12 +3,7 @@
 #include <chrono>
 #include "driveBase.hpp"
 #include "parameters.hpp"
-
-float radiansMod(float x, float y){
-    //x (mod y) を -y/2 ~ y/2の範囲で出力
-    //主に2つの方角のなす角度を計算するのに使用
-    return fmod((fmod(x,y) + y/2.0),y) - y/2.0;
-}
+#include "simpleFunctions.hpp"
 
 //初期化
 DriveBase::DriveBase(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor* motor_2, DriveMotor* motor_3, float kp_1, float ki_1, float kd_1, float kp_2, float ki_2, float kd_2): localization(motor_0, motor_1, motor_2, motor_3), pidController(SPEED_ADJUSTMENT_FREQUENCY, kp_1, ki_1, kd_1), pidRotateController(SPEED_ADJUSTMENT_FREQUENCY, kp_2, ki_2, kd_2) {

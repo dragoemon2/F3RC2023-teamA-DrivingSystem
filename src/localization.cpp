@@ -12,6 +12,7 @@ Localization::Localization(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor*
 
     ticker.attach([this] {encoderLocalization();}, std::chrono::milliseconds(1000)/ENCODER_LOCALIZATION_FREQUENCY);
     flag = false;
+    
 }
 
 

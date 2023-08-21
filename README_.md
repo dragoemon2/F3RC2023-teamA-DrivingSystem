@@ -158,7 +158,7 @@ F3RCの足回り周辺のプログラムです
 
 ## 原理の説明
 
-ここからは原理の説明です．markdownだからlatexかけるよなと思ったんですが，pushしたら数式見れなかったので，ダウンロードしてvscodeで開いて見てください(ごめん)
+下の図はプログラム全体のフローチャートです．これをみながら読んでください
 
 ![DriveSystem](https://user-images.githubusercontent.com/139035878/258173851-2150bdb4-e32b-4fe9-99ad-47ba0cc4f7de.png)
 
@@ -266,10 +266,10 @@ F3RCの足回り周辺のプログラムです
         float dd = (incrementDelta[0] + incrementDelta[1] + incrementDelta[2] + incrementDelta[3])/4;
 
         //回転成分を取り除く
-        float a = SQRT2*(driveMotors[0]->encoder.IncrementedNum-dd); //-dx+dy
-        float b = SQRT2*(driveMotors[1]->encoder.IncrementedNum-dd); //-dx-dy
-        float c = SQRT2*(driveMotors[2]->encoder.IncrementedNum-dd); //+dx-dy
-        float d = SQRT2*(driveMotors[3]->encoder.IncrementedNum-dd); //+dx+dy
+        float a = SQRT2*(incrementDelta[0]-dd); //-dx+dy
+        float b = SQRT2*(incrementDelta[1]-dd); //-dx-dy
+        float c = SQRT2*(incrementDelta[2]-dd); //+dx-dy
+        float d = SQRT2*(incrementDelta[3]-dd); //+dx+dy
 
         //位置の変化．ただしロボットに対して相対的な向き
         float dx = (-a-b+c+d)/4; // x成分の変化量/MMPP
