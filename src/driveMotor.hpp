@@ -27,8 +27,10 @@ class DriveMotor{
 
         void attachLoop(function<void(void)> loop_func);
 
+        bool sign;
 
-        DriveMotor(PinName encoder_pin_a, PinName encoder_pin_b, PinName pwm_pin, PinName dir_pin, float kp_1, float ki_1, float kd_1, float kp_2, float ki_2, float kd_2);
+
+        DriveMotor(PinName encoder_pin_a, PinName encoder_pin_b, PinName pwm_pin, PinName dir_pin, float kp_1, float ki_1, float kd_1, float kp_2, float ki_2, float kd_2, bool sign=1);
 
         float target = 0.0f;
         float target_speed = 0.0f;
