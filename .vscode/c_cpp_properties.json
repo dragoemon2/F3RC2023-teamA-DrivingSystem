@@ -8,12 +8,25 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "/Users/ryunosuke/Documents/keio_robot/F3RC2023-teamA-DrivingSystem/include",
-                "/Users/ryunosuke/Documents/keio_robot/F3RC2023-teamA-DrivingSystem/src",
-                "/Users/ryunosuke/.platformio/packages/framework-mbed@src-c33fc38bdd3355f3735da9403dceb1e7",
-                "/Users/ryunosuke/Documents/keio_robot/F3RC2023-teamA-DrivingSystem/.pio/build/nucleo_f446re",
-                "/Users/ryunosuke/Documents/keio_robot/F3RC2023-teamA-DrivingSystem/.pio/libdeps/nucleo_f446re/Unity/src",
-                ""
+                "${workspaceRoot}/include",
+                "${workspaceRoot}/src",
+                "~/.platformio/packages/framework-mbed/",
+                "${workspaceRoot}/.pio/build/nucleo_f446re",
+                "~/.platformio/packages/framework-mbed/platform/include/",
+                "~/.platformio/packages/framework-mbed/cmsis/",
+                "~/.platformio/packages/framework-mbed/connectivity/",
+                "~/.platformio/packages/framework-mbed/drivers/",
+                "~/.platformio/packages/framework-mbed/events/",
+                "~/.platformio/packages/framework-mbed/hal/include/",
+                "~/.platformio/packages/framework-mbed/rtos/",
+                "~/.platformio/packages/framework-mbed/storage/",
+                "~/.platformio/packages/framework-mbed/tools/**",
+                "~/.platformio/packages/framework-mbed/targets/TARGET_STM/",
+                "~/.platformio/packages/framework-mbed/targets/TARGET_STM/TARGET_STM32F4/",
+                "~/.platformio/packages/framework-mbed/targets/TARGET_STM/TARGET_STM32F4/STM32Cube_FW/**",
+                "~/.platformio/packages/framework-mbed/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F446xE/",
+                "~/.platformio/packages/framework-mbed/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F446xE/TARGET_NUCLEO_F446RE/**",
+                "~.platformio/packages/framework-mbed/platform/cxxsupport"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
