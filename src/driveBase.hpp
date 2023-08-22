@@ -42,6 +42,10 @@ class DriveBase{
         int _s1;
         int _s2;
 
+        float lastTargetSpeedX = 0.0f;
+        float lastTargetSpeedY = 0.0f;
+        float lastTargetSpeedD = 0.0f;
+
     private:
         void go(float targetSpeedX, float targetSpeedY, float targetSpeedD);
         void goTowardTargetAccDcc(float movement_threshold = MOVEMENT_THRESHOLD, float movement_threshold_rad = MOVEMENT_THRESHOLD_RAD, bool stop=true);

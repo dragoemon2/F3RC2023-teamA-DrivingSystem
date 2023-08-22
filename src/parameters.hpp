@@ -2,6 +2,8 @@
 
 #pragma once
 
+#define SIMULATION (0)
+
 //定数
 #define PI (3.141592653589793)
 #define SQRT2 (1.414213562373095)
@@ -59,7 +61,7 @@
 #define DRIVEBASE_ROTATE_KD (DRIVEBASE_KD)
 
 //移動パラメータ
-#define MAX_ACCELERATION (20000) //最大加速度 [mm/s^2]
+#define MAX_ACCELERATION (3000) //最大加速度 [mm/s^2]
 #define MAX_SPEED (1000) //最高速度  [mm/s]
 #define MAX_ROTATE_ACCELERATION (MAX_ACCELERATION/TRED_RADIUS) //最大回転速度  [rad/s^2]
 #define MAX_ROTATE_SPEED (MAX_SPEED/TRED_RADIUS) //最大回転加速度  [rad/s]

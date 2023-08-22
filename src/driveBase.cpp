@@ -5,6 +5,19 @@
 #include "parameters.hpp"
 #include "simpleFunctions.hpp"
 
+
+inline bool limit_filter(float* value, float minValue, float maxValue){
+    if(*value < minValue){
+        *value = minValue;
+        return 1;
+    }else if(*value > maxValue){
+        *value = maxValue;
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
 //初期化
 DriveBase::DriveBase(DriveMotor* motor_0, DriveMotor* motor_1, DriveMotor* motor_2, DriveMotor* motor_3, float kp_1, float ki_1, float kd_1, float kp_2, float ki_2, float kd_2): localization(motor_0, motor_1, motor_2, motor_3), pidController(SPEED_ADJUSTMENT_FREQUENCY, kp_1, ki_1, kd_1), pidRotateController(SPEED_ADJUSTMENT_FREQUENCY, kp_2, ki_2, kd_2) {
     motors[0] = motor_0;
@@ -24,12 +37,13 @@ void DriveBase::resetPID(){
     pidRotateController.reset();
 }
 
+
+#if 1
 //速度を指定して移動
 void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
-    float targetSpeedR = sqrtf(targetSpeedX*targetSpeedX + targetSpeedY*targetSpeedY);
 
-    _s1 = int(targetSpeedX);
-    _s2 = int(targetSpeedY);
+    #if 1
+    float targetSpeedR = sqrtf(targetSpeedX*targetSpeedX + targetSpeedY*targetSpeedY);
 
     //速度を制限する
     if(targetSpeedR > MAX_SPEED){
@@ -46,11 +60,18 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
         pidRotateController.reset();
     }
 
+    #if 0 //どっちにしようかな〜
     float targetAccX = (targetSpeedX - localization.speedX) * SPEED_ADJUSTMENT_FREQUENCY;
     float targetAccY = (targetSpeedY - localization.speedY) * SPEED_ADJUSTMENT_FREQUENCY;
-    float targetAccR = sqrtf(targetAccX*targetAccX + targetAccY*targetAccY);
     float targetAccD = (targetSpeedD - localization.rotateSpeed) * SPEED_ADJUSTMENT_FREQUENCY;
+    #else
+    float targetAccX = (targetSpeedX - lastTargetSpeedX) * SPEED_ADJUSTMENT_FREQUENCY;
+    float targetAccY = (targetSpeedX - lastTargetSpeedY) * SPEED_ADJUSTMENT_FREQUENCY;
+    float targetAccD = (targetSpeedD - lastTargetSpeedD) * SPEED_ADJUSTMENT_FREQUENCY;
+    #endif
 
+    float targetAccR = sqrtf(targetAccX*targetAccX + targetAccY*targetAccY);
+    
     //加速度を制限する
     if(targetAccR > MAX_ACCELERATION){
         targetAccX = MAX_ACCELERATION*(targetAccX/targetAccR);
@@ -65,7 +86,67 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
         targetSpeedD = localization.rotateSpeed - MAX_ROTATE_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
     }
 
-    
+    #else
+
+    if(targetSpeedX > MAX_SPEED){
+        targetSpeedX = MAX_SPEED;
+        pidController.reset();
+    }else if(targetSpeedX < -MAX_SPEED){
+        targetSpeedX = -MAX_SPEED;
+        pidController.reset();
+    }
+
+    if(targetSpeedY > MAX_SPEED){
+        targetSpeedY = MAX_SPEED;
+        pidController.reset();
+    }else if(targetSpeedY < -MAX_SPEED){
+        targetSpeedY = -MAX_SPEED;
+        pidController.reset();
+    }
+
+    if(targetSpeedD > MAX_ROTATE_SPEED){
+        targetSpeedD = MAX_ROTATE_SPEED;
+        pidRotateController.reset();
+    }else if(targetSpeedD < -MAX_ROTATE_SPEED){
+        targetSpeedD = -MAX_ROTATE_SPEED;
+        pidRotateController.reset();
+    }
+
+    #if 0 //どっちにしようかな〜
+    float targetAccX = (targetSpeedX - localization.speedX) * SPEED_ADJUSTMENT_FREQUENCY;
+    float targetAccY = (targetSpeedY - localization.speedY) * SPEED_ADJUSTMENT_FREQUENCY;
+    float targetAccD = (targetSpeedD - localization.rotateSpeed) * SPEED_ADJUSTMENT_FREQUENCY;
+    #else
+    float targetAccX = (targetSpeedX - lastTargetSpeedX) * SPEED_ADJUSTMENT_FREQUENCY;
+    float targetAccY = (targetSpeedX - lastTargetSpeedY) * SPEED_ADJUSTMENT_FREQUENCY;
+    float targetAccD = (targetSpeedD - lastTargetSpeedD) * SPEED_ADJUSTMENT_FREQUENCY;
+    #endif
+
+    if(targetAccX > MAX_ACCELERATION){
+        targetSpeedX = localization.speedX + MAX_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
+    }else if(targetAccX < -MAX_ACCELERATION){
+        targetSpeedX = localization.speedX - MAX_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
+    }
+
+    if(targetAccY > MAX_ACCELERATION){
+        targetSpeedY = localization.speedY + MAX_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
+    }else if(targetAccY < -MAX_ACCELERATION){
+        targetSpeedY = localization.speedY - MAX_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
+    }
+
+    if(targetAccD > MAX_ROTATE_ACCELERATION){
+        targetSpeedD = localization.rotateSpeed + MAX_ROTATE_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
+    }else if(targetAccD < -MAX_ROTATE_ACCELERATION){
+        targetSpeedD = localization.rotateSpeed - MAX_ROTATE_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
+    }
+    #endif
+
+    _s1 = int(targetSpeedX);
+    _s2 = int(targetSpeedY);
+
+    lastTargetSpeedX = targetSpeedX;
+    lastTargetSpeedY = targetSpeedY;
+    lastTargetSpeedD = targetSpeedD;
 
     //X, Yに回転行列をかける
     float vx = cos(localization.direction)*targetSpeedX + sin(localization.direction)*targetSpeedY;
@@ -84,6 +165,52 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
     }
 
 }
+
+#else
+//速度を指定して移動
+void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
+    if(limit_filter(&targetSpeedX, -MAX_SPEED, +MAX_SPEED)){
+        pidController.reset();
+    }
+    if(limit_filter(&targetSpeedY, -MAX_SPEED, +MAX_SPEED)){
+        pidController.reset();
+    }
+    if(limit_filter(&targetSpeedD, -MAX_ROTATE_SPEED, +MAX_ROTATE_SPEED)){
+        pidRotateController.reset();
+    }
+
+    limit_filter(&targetSpeedX, lastTargetSpeedX-MAX_ACCELERATION/SPEED_ADJUSTMENT_FREQUENCY, lastTargetSpeedX+MAX_ACCELERATION/SPEED_ADJUSTMENT_FREQUENCY);
+    limit_filter(&targetSpeedY, lastTargetSpeedY-MAX_ACCELERATION/SPEED_ADJUSTMENT_FREQUENCY, lastTargetSpeedY+MAX_ACCELERATION/SPEED_ADJUSTMENT_FREQUENCY);
+    limit_filter(&targetSpeedD, lastTargetSpeedD-MAX_ROTATE_ACCELERATION/SPEED_ADJUSTMENT_FREQUENCY, lastTargetSpeedD+MAX_ROTATE_ACCELERATION/SPEED_ADJUSTMENT_FREQUENCY);
+
+    _s1 = int(targetSpeedX);
+    _s2 = int(targetSpeedY);
+
+    lastTargetSpeedX = targetSpeedX;
+    lastTargetSpeedY = targetSpeedY;
+    lastTargetSpeedD = targetSpeedD;
+
+    //X, Yに回転行列をかける
+    float vx = cos(localization.direction)*targetSpeedX + sin(localization.direction)*targetSpeedY;
+    float vy = -sin(localization.direction)*targetSpeedX + cos(localization.direction)*targetSpeedY;
+
+    //各モーターの速度
+    float speeds[4]; //モーターの速度
+    speeds[0] = SQRT2/2 * (- vx + vy) + TRED_RADIUS * targetSpeedD;
+    speeds[1] = SQRT2/2 * (- vx - vy) + TRED_RADIUS * targetSpeedD;
+    speeds[2] = SQRT2/2 * (+ vx - vy) + TRED_RADIUS * targetSpeedD;
+    speeds[3] = SQRT2/2 * (+ vx + vy) + TRED_RADIUS * targetSpeedD;
+    
+    
+    for (int i=0;i<4;i++){
+        motors[i]->rotate(speeds[i]);
+    }
+
+}
+
+
+#endif
+
 
 
 //現在決められている目標に向かって進む
@@ -107,6 +234,7 @@ void DriveBase::goTowardTargetAccDcc(float movement_threshold, float movement_th
         targetSpeedX = targetSpeedR*(differenceX/differenceR);
         targetSpeedY = targetSpeedR*(differenceY/differenceR);
     }
+
 
     float targetSpeedD = pidRotateController.calculate(differenceD);
 

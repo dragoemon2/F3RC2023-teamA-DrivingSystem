@@ -4,7 +4,9 @@
 #include "encoder.hpp"
 
 Encoder::Encoder(PinName pinA, PinName pinB): A(pinA), B(pinB) {
+    #if !SIMULATION
     A.rise([this]() {increment(1);}); //インクリメント
+    #endif
     //A.fall([this]() {increment(-1);});
 }
 

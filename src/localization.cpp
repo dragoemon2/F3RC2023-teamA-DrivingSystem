@@ -37,6 +37,10 @@ void Localization::encoderLocalization(){
     float dx = (-a-b+c+d)/4.0f; // x成分の変化量/MMPP
     float dy = (+a-b-c+d)/4.0f; // y成分の変化量/MMPP
 
+    float dD = RADPP * dd;
+    direction += 0.5*dD;
+    rotateSpeed = dD*ENCODER_LOCALIZATION_FREQUENCY;
+
     //推定値の書き込み
     float dX = MMPP * (cos(direction)*dx-sin(direction)*dy);
     posX += dX;
@@ -46,10 +50,11 @@ void Localization::encoderLocalization(){
     posY += dY;
     speedY = dY*ENCODER_LOCALIZATION_FREQUENCY;
 
-    float dD = RADPP * dd;
+    direction += 0.5*dD;
 
-    direction += dD;
-    rotateSpeed = dD*ENCODER_LOCALIZATION_FREQUENCY;
+    
+
+    
 
     for (int i=0;i<4;i++){
         incrementedNumBefore[i] = driveMotors[i]->encoder.IncrementedNum;

@@ -13,13 +13,15 @@
 DriveMotor motor0(PB_4, PB_5, PB_1, PC_9, MOTOR_0_KP_1, MOTOR_0_KI_1, MOTOR_0_KD_1, MOTOR_0_KP_2, MOTOR_0_KI_2, MOTOR_0_KD_2);
 DriveMotor motor1(PA_0, PA_1, PB_15, PC_8, MOTOR_1_KP_1, MOTOR_1_KI_1, MOTOR_1_KD_1, MOTOR_1_KP_2, MOTOR_1_KI_2, MOTOR_1_KD_2);
 DriveMotor motor2(PA_11, PB_12, PB_14, PC_6, MOTOR_2_KP_1, MOTOR_2_KI_1, MOTOR_2_KD_1, MOTOR_2_KP_2, MOTOR_2_KI_2, MOTOR_2_KD_2);
-DriveMotor motor3(PC_11, PD_2, PB_13, PB_2, MOTOR_3_KP_1, MOTOR_3_KI_1, MOTOR_3_KD_1, MOTOR_3_KP_2, MOTOR_3_KI_2, MOTOR_3_KD_2);
+DriveMotor motor3(PC_10, PC_12, PB_13, PB_2, MOTOR_3_KP_1, MOTOR_3_KI_1, MOTOR_3_KD_1, MOTOR_3_KP_2, MOTOR_3_KI_2, MOTOR_3_KD_2);
 
 //シミュレーション
-MotorSimulation simulation1(&motor0, 5000);
-MotorSimulation simulation2(&motor1, 5000);
-MotorSimulation simulation3(&motor2, 5000);
-MotorSimulation simulation4(&motor3, 5000);
+#if SIMULATION
+MotorSimulation simulation0(&motor0, 5000);
+MotorSimulation simulation1(&motor1, 5000);
+MotorSimulation simulation2(&motor2, 5000);
+MotorSimulation simulation3(&motor3, 5000);
+#endif
 
 //足回り全体
 DriveBase driveBase(&motor0, &motor1, &motor2, &motor3);
@@ -34,8 +36,12 @@ Timer timer;
 
 
 void drive(){
-    driveBase.attachLoop([](){printf("%d %d %d %d\n", int(driveBase._s1), int(driveBase.localization.posX), int(driveBase.localization.posY), int(driveBase.localization.direction*180/PI));});
-    driveBase.goTo(20000, 20000, PI/4);
+    //driveBase.localization.setPosition(0,0,0);
+    //driveBase.attachLoop([](){printf("%d %d %d %d\n", int(motor0._s1), int(motor1._s1),  int(motor2._s1),  int(motor3._s1));});
+    //driveBase.attachLoop([](){printf("%d %d %d %d\n", motor0.encoder.IncrementedNum, motor1.encoder.IncrementedNum,  motor2.encoder.IncrementedNum,  motor3.encoder.IncrementedNum);});
+    driveBase.attachLoop([](){printf("%d %d %d %d %d %d\n", int(driveBase.lastTargetSpeedX), int(driveBase.lastTargetSpeedY),  int(driveBase.lastTargetSpeedD*TRED_RADIUS),  int(driveBase.localization.posX), int(driveBase.localization.posY), int(driveBase.localization.direction*180/PI));});
+    driveBase.goTo(10000, 10000, -PI/2);
+    //driveBase.runNoEncoder(0,0,0,0.4,10);
     while(1){
 
     }
