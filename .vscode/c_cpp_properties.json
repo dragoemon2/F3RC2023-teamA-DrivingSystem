@@ -1,8 +1,3 @@
-//
-// !!! WARNING !!! AUTO-GENERATED FILE!
-// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
-// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
-//
 {
     "configurations": [
         {
@@ -26,7 +21,7 @@
                 "~/.platformio/packages/framework-mbed/targets/TARGET_STM/TARGET_STM32F4/STM32Cube_FW/**",
                 "~/.platformio/packages/framework-mbed/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F446xE/",
                 "~/.platformio/packages/framework-mbed/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F446xE/TARGET_NUCLEO_F446RE/**",
-                "~.platformio/packages/framework-mbed/platform/cxxsupport"
+                "~/.platformio/packages/framework-mbed/platform/cxxsupport"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,

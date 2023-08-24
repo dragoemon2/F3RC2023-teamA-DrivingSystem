@@ -17,7 +17,9 @@ class DriveBase{
 
         PIDController pidController;
         PIDController pidRotateController;
-        
+
+        //速度ポインタに合わせた移動
+        void goPtrStart(float* targetSpeedX, float* targetSpeedY, float* targetSpeedD, bool absolute=false, bool idle=false);
 
         //直線移動
         void goTo(float X, float Y, float D, bool idle=true, bool stop=true);
@@ -47,7 +49,8 @@ class DriveBase{
         float lastTargetSpeedD = 0.0f;
 
     private:
-        void go(float targetSpeedX, float targetSpeedY, float targetSpeedD);
+        void goPtr(bool absolute=false);
+        void go(float targetSpeedX, float targetSpeedY, float targetSpeedD, bool absolute=false);
         void goTowardTargetAccDcc(float movement_threshold = MOVEMENT_THRESHOLD, float movement_threshold_rad = MOVEMENT_THRESHOLD_RAD, bool stop=true);
         void runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, int num);
         void resetPID();
@@ -66,6 +69,10 @@ class DriveBase{
         float delta_X_before = 0.0f;
         float delta_Y_before = 0.0f;
         float delta_D_before = 0.0f;
+
+        float* targetSpeedXPtr;
+        float* targetSpeedYPtr;
+        float* targetSpeedDPtr;
 };
 
 
