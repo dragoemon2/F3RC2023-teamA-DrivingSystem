@@ -75,20 +75,9 @@ void drive(){
 void move_test(){
     test_motor.rotateTo(5000,false); 
 
-    //printf("hoge");
-
-    while(test_motor.moving){
-        //printf("%d, %d, 0, 0\n", int(motor2._s2), int(motor2._s1));
-        
+    while(test_motor.moving){  
         printf("%d, %d, %d, %d\n", int(test_motor._s2), int(test_motor._s1), 5000, int(test_motor.encoder.getAmount()));
-
-        
-        //printf("%d %d %d %d\n", int(motor0.encoder.getAmount()), int(motor1.encoder.getAmount()), int(motor2.encoder.getAmount()), int(motor3.encoder.getAmount()));
-        //printf("%d,%d,%d| %d %d %d %d\n",int(driveBase.localization.posX), int(driveBase.localization.posY), int(180/PI*driveBase.localization.direction), int(motor0.encoder.getAmount()), int(motor1.encoder.getAmount()), int(motor2.encoder.getAmount()), int(motor3.encoder.getAmount()));
-        //printf("%d,%d,%d| %d %d %d %d\n",int(driveBase.localization.posX), int(driveBase.localization.posY), int(180/PI*driveBase.localization.direction), int(motor0.encoder.getAmount()), int(motor1.encoder.getAmount()), int(motor2.encoder.getAmount()), int(motor3.encoder.getAmount()));
-        //printf("%d,%d,%d\n",int(driveBase.localization.posX), int(driveBase.localization.posY), int(180/PI*driveBase.localization.direction));
         wait_us(20000);
-        
     }
 }
 
@@ -101,24 +90,9 @@ void speed_test(){
 
     test_motor.rotatePermanent(1000,false);
 
-    //printf("hoge");
-
     while(true){
         printf("%d, %d, 0, 0\n", int(test_motor._s2), int(test_motor._s1));
-        
-        //printf("%d, %d, %d, %d\n", int(motor2._s2), int(motor2._s1), 1000, int(motor2.encoder.getAmount()));
-
-        
-        //printf("%d %d %d %d\n", int(motor0.encoder.getAmount()), int(motor1.encoder.getAmount()), int(motor2.encoder.getAmount()), int(motor3.encoder.getAmount()));
-        //printf("%d,%d,%d| %d %d %d %d\n",int(driveBase.localization.posX), int(driveBase.localization.posY), int(180/PI*driveBase.localization.direction), int(motor0.encoder.getAmount()), int(motor1.encoder.getAmount()), int(motor2.encoder.getAmount()), int(motor3.encoder.getAmount()));
-        //printf("%d,%d,%d| %d %d %d %d\n",int(driveBase.localization.posX), int(driveBase.localization.posY), int(180/PI*driveBase.localization.direction), int(motor0.encoder.getAmount()), int(motor1.encoder.getAmount()), int(motor2.encoder.getAmount()), int(motor3.encoder.getAmount()));
-        //printf("%d,%d,%d\n",int(driveBase.localization.posX), int(driveBase.localization.posY), int(180/PI*driveBase.localization.direction));
         wait_us(20000);
-        
-        //printf("%d,%d,%d| %d %d %d %d\n",int(driveBase.localization.posX), int(driveBase.localization.posY), int(180/PI*driveBase.localization.direction), int(motor0.encoder.getAmount()), int(motor1.encoder.getAmount()), int(motor2.encoder.getAmount()), int(motor3.encoder.getAmount()));
-
-
-        //pc.loop();
         if(chrono::duration<float>(timer.elapsed_time()).count() > 5 && !flag){
             flag = true;
             test_motor.rotatePermanent(0,false);
@@ -129,16 +103,9 @@ void speed_test(){
             
         }
     }
-    //motor2.rotatePermanent(0,false);
 
     test_motor.stop();
 }
-
-
-
-
-
-//#define test_motor (motor0)
 
 //一定duty比で動かす
 void motor_test(){
