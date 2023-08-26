@@ -9,7 +9,7 @@
 
 //初期化
 DriveMotor::DriveMotor(PinName encoder_pin_a, PinName encoder_pin_b, PinName pwm_pin, PinName dir_pin, float kp_1, float ki_1, float kd_1, float kp_2, float ki_2, float kd_2, bool sign): encoder(encoder_pin_a, encoder_pin_b), pwmOut(pwm_pin), dirOut(dir_pin), pidController(SPEED_ADJUSTMENT_FREQUENCY,kp_1,ki_1,kd_1), pidSpeedController(SPEED_ADJUSTMENT_FREQUENCY,kp_2,ki_2,kd_2), sign(sign) {
-    pwmOut.period(0.00006);
+    pwmOut.period(0.001);
     pidController.reset();
     
     loop = [this] {return;};

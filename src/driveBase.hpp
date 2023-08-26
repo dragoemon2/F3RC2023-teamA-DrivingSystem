@@ -50,7 +50,7 @@ class DriveBase{
 
     private:
         void goPtr(bool absolute=false);
-        void go(float targetSpeedX, float targetSpeedY, float targetSpeedD, bool absolute=false);
+        void go(float targetSpeedX, float targetSpeedY, float targetSpeedD, bool absolute=true);
         void goTowardTargetAccDcc(float movement_threshold = MOVEMENT_THRESHOLD, float movement_threshold_rad = MOVEMENT_THRESHOLD_RAD, bool stop=true);
         void runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, int num);
         void resetPID();

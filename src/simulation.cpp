@@ -9,6 +9,7 @@ MotorSimulation::MotorSimulation(DriveMotor* motor, float gain, int frequency): 
 
 
 void MotorSimulation::interrupt(){
+    #if SIMULATION
     float pwm = motor->pwm;
     if(pwm > 1){
         pwm = 1;
@@ -29,5 +30,6 @@ void MotorSimulation::interrupt(){
         value += MMPP;
         motor->encoder.IncrementedNum -= 1;
     }
+    #endif
 
 }

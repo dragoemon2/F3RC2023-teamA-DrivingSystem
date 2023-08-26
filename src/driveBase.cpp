@@ -42,7 +42,6 @@ void DriveBase::resetPID(){
 //速度を指定して移動
 void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD, bool absolute){
 
-    #if 1
     float targetSpeedR = sqrtf(targetSpeedX*targetSpeedX + targetSpeedY*targetSpeedY);
 
     //速度を制限する
@@ -66,7 +65,7 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD, b
     float targetAccD = (targetSpeedD - localization.rotateSpeed) * SPEED_ADJUSTMENT_FREQUENCY;
     #else
     float targetAccX = (targetSpeedX - lastTargetSpeedX) * SPEED_ADJUSTMENT_FREQUENCY;
-    float targetAccY = (targetSpeedX - lastTargetSpeedY) * SPEED_ADJUSTMENT_FREQUENCY;
+    float targetAccY = (targetSpeedY - lastTargetSpeedY) * SPEED_ADJUSTMENT_FREQUENCY;
     float targetAccD = (targetSpeedD - lastTargetSpeedD) * SPEED_ADJUSTMENT_FREQUENCY;
     #endif
 
@@ -79,68 +78,15 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD, b
         targetSpeedX = localization.speedX + targetAccX/SPEED_ADJUSTMENT_FREQUENCY;
         targetSpeedY = localization.speedY + targetAccY/SPEED_ADJUSTMENT_FREQUENCY;
     }
-
+    
     if(targetAccD > MAX_ROTATE_ACCELERATION){
         targetSpeedD = localization.rotateSpeed + MAX_ROTATE_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
     }else if(targetAccD < -MAX_ROTATE_ACCELERATION){
         targetSpeedD = localization.rotateSpeed - MAX_ROTATE_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
     }
 
-    #else
-
-    if(targetSpeedX > MAX_SPEED){
-        targetSpeedX = MAX_SPEED;
-        pidController.reset();
-    }else if(targetSpeedX < -MAX_SPEED){
-        targetSpeedX = -MAX_SPEED;
-        pidController.reset();
-    }
-
-    if(targetSpeedY > MAX_SPEED){
-        targetSpeedY = MAX_SPEED;
-        pidController.reset();
-    }else if(targetSpeedY < -MAX_SPEED){
-        targetSpeedY = -MAX_SPEED;
-        pidController.reset();
-    }
-
-    if(targetSpeedD > MAX_ROTATE_SPEED){
-        targetSpeedD = MAX_ROTATE_SPEED;
-        pidRotateController.reset();
-    }else if(targetSpeedD < -MAX_ROTATE_SPEED){
-        targetSpeedD = -MAX_ROTATE_SPEED;
-        pidRotateController.reset();
-    }
-
-    #if 0 //どっちにしようかな〜
-    float targetAccX = (targetSpeedX - localization.speedX) * SPEED_ADJUSTMENT_FREQUENCY;
-    float targetAccY = (targetSpeedY - localization.speedY) * SPEED_ADJUSTMENT_FREQUENCY;
-    float targetAccD = (targetSpeedD - localization.rotateSpeed) * SPEED_ADJUSTMENT_FREQUENCY;
-    #else
-    float targetAccX = (targetSpeedX - lastTargetSpeedX) * SPEED_ADJUSTMENT_FREQUENCY;
-    float targetAccY = (targetSpeedX - lastTargetSpeedY) * SPEED_ADJUSTMENT_FREQUENCY;
-    float targetAccD = (targetSpeedD - lastTargetSpeedD) * SPEED_ADJUSTMENT_FREQUENCY;
-    #endif
-
-    if(targetAccX > MAX_ACCELERATION){
-        targetSpeedX = localization.speedX + MAX_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
-    }else if(targetAccX < -MAX_ACCELERATION){
-        targetSpeedX = localization.speedX - MAX_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
-    }
-
-    if(targetAccY > MAX_ACCELERATION){
-        targetSpeedY = localization.speedY + MAX_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
-    }else if(targetAccY < -MAX_ACCELERATION){
-        targetSpeedY = localization.speedY - MAX_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
-    }
-
-    if(targetAccD > MAX_ROTATE_ACCELERATION){
-        targetSpeedD = localization.rotateSpeed + MAX_ROTATE_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
-    }else if(targetAccD < -MAX_ROTATE_ACCELERATION){
-        targetSpeedD = localization.rotateSpeed - MAX_ROTATE_ACCELERATION / SPEED_ADJUSTMENT_FREQUENCY;
-    }
-    #endif
-
+    
+    //デバッグ用
     _s1 = int(targetSpeedX);
     _s2 = int(targetSpeedY);
 
@@ -156,7 +102,7 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD, b
         vy = -sin(localization.direction)*targetSpeedX + cos(localization.direction)*targetSpeedY;
     }else{
         vx = targetSpeedX;
-        vy = targetSpeedX;
+        vy = targetSpeedY;
     }
 
     //各モーターの速度
@@ -174,6 +120,7 @@ void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD, b
 }
 
 #else
+//成分ごとに制限をかける場合．おそらく使用しない．（計算量は減るが方向によって最高速度が違うのは不自然なので)
 //速度を指定して移動
 void DriveBase::go(float targetSpeedX, float targetSpeedY, float targetSpeedD){
     if(limit_filter(&targetSpeedX, -MAX_SPEED, +MAX_SPEED)){
@@ -244,8 +191,6 @@ void DriveBase::goTowardTargetAccDcc(float movement_threshold, float movement_th
 
     float targetSpeedD = pidRotateController.calculate(differenceD);
 
-
-
     //targetSpeedD = 0;
 
     go(targetSpeedX, targetSpeedY, targetSpeedD);
@@ -309,10 +254,9 @@ void DriveBase::goTo(float X, float Y, float D, bool idle, bool stop){
 }
 
 
-
+//エンコーダーなしでロボットを動かす．主にデバッグ用
 void DriveBase::runNoEncoder(float pwmX, float pwmY, float dir, float pwmD, float time){
     if(moving){
-        printf("warning: a motion requested while the robot is moving.");
         movementTicker.detach();
     }
 
@@ -352,7 +296,7 @@ void DriveBase::goParallelTo(float X, float Y, bool idle){
     goTo(X, Y, localization.direction, idle);
 }
 
-
+//private
 void DriveBase::runAlongArch(float radius, float centerX, float centerY, float start_dir, float end_dir, float D, bool stop, int num){
     for(int i=0;i<num+1;i++){
         float X = centerX + radius*sin(start_dir + radiansMod(end_dir-start_dir) * (float(i)/num));
@@ -364,7 +308,7 @@ void DriveBase::runAlongArch(float radius, float centerX, float centerY, float s
     }
 }
 
-
+//曲線移動．たぶん使わない．
 void DriveBase::goCurveTo(float start_dir, float end_dir, float X, float Y, float D, bool stop, int num){
     if(radiansMod(start_dir - end_dir) == 0){
         goTo(X, Y, D, true, stop);
@@ -390,10 +334,12 @@ void DriveBase::goCurveTo(float start_dir, float end_dir, float X, float Y, floa
     }
 }
 
+//private
 void DriveBase::goPtr(bool absolute){
     go(*targetSpeedXPtr, *targetSpeedYPtr, *targetSpeedDPtr, absolute);
 }
 
+//目標速度をポインタとして渡す．コントローラーでの操作で使用．
 void DriveBase::goPtrStart(float* targetSpeedX, float* targetSpeedY, float* targetSpeedD, bool absolute, bool idle){
     targetSpeedXPtr = targetSpeedX;
     targetSpeedYPtr = targetSpeedY;
@@ -407,6 +353,8 @@ void DriveBase::goPtrStart(float* targetSpeedX, float* targetSpeedY, float* targ
     }
 }
 
+//ロボットが動いている間に繰り返し行う動作を，関数渡しにより設定
+//analoginやprintfなど，タイマー割り込みで行えないものを書く．
 void DriveBase::attachLoop(function<void(void)> loop_func){
     loop = loop_func;
 }
